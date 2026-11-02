@@ -1,0 +1,568 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#08080d">
+<title>PS Prompt Studio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%237138db'/%3E%3Ctext x='50%25' y='58%25' font-size='40' font-weight='bold' text-anchor='middle' fill='white'%3EPS%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+--bg:#08080d;--panel:#11111b;--panel2:#171725;
+--purple:#9b5cff;--purple2:#7138db;--text:#f5f2ff;
+--muted:#aaa5bb;--border:#292638;--green:#42d69b;
+}
+*{box-sizing:border-box}
+body{
+margin:0;background:var(--bg);color:var(--text);
+font-family:Arial,Helvetica,sans-serif;line-height:1.55;
+transition:.25s;
+}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+header{
+position:sticky;top:0;z-index:5;background:#090910ed;
+backdrop-filter:blur(14px);border-bottom:1px solid var(--border);
+padding:13px 5%;display:flex;align-items:center;
+justify-content:space-between;gap:12px;
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{
+width:43px;height:43px;display:flex;align-items:center;
+justify-content:center;border-radius:12px;
+background:linear-gradient(135deg,#32145b,#9b5cff);
+border:1px solid #bd91ff;color:white;font-size:21px;
+font-weight:1000;font-style:italic;
+box-shadow:0 0 18px #9b5cff66;
+}
+.brand-name{display:flex;flex-direction:column;line-height:1.15;font-size:17px;font-weight:900}
+.brand-name b{color:#c59aff}
+.brand-name span{color:#aaa5bb;font-size:10px;letter-spacing:2px}
+nav{display:flex;gap:8px;flex-wrap:wrap}
+nav button,.small-btn{
+color:var(--muted);background:transparent;border:1px solid var(--border);
+border-radius:9px;padding:8px 11px;
+}
+nav button.active,nav button:hover,.small-btn:hover{
+color:white;border-color:var(--purple);background:#211536;
+}
+.container{width:min(1050px,92%);margin:auto}
+.hero{text-align:center;padding:52px 0 30px}
+.tag{
+display:inline-block;padding:6px 13px;border:1px solid #58348a;
+background:#1b102b;border-radius:30px;color:#cbaaff;font-size:12px;
+}
+h1{font-size:clamp(30px,6vw,54px);line-height:1.12;margin:19px 0 12px}
+.gradient{
+background:linear-gradient(90deg,#fff,#bb8cff,#8e5aff);
+-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.subtitle{color:var(--muted);max-width:650px;margin:auto}
+.panel{
+background:linear-gradient(145deg,#151420,#101019);
+border:1px solid var(--border);border-radius:17px;padding:20px;
+box-shadow:0 12px 45px #0005;margin:20px 0;
+}
+.section-title{font-size:19px;font-weight:800;margin:0 0 13px}
+label{display:block;font-size:13px;color:#d2cce0;margin:13px 0 7px}
+textarea,input,select{
+width:100%;background:#090910;border:1px solid #343044;
+border-radius:10px;padding:13px;color:white;outline:none;
+}
+textarea{min-height:125px;resize:vertical}
+textarea:focus,input:focus,select:focus{border-color:var(--purple)}
+select option{background:#11111b}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.category{
+border:1px solid var(--border);border-radius:12px;
+background:#11111a;color:white;padding:13px 8px;text-align:center;
+}
+.category .emoji{font-size:23px;display:block;margin-bottom:5px}
+.category.selected,.category:hover{border-color:var(--purple);background:#28183e}
+.category small{color:var(--muted);font-size:11px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+.btn{
+border:0;border-radius:10px;padding:12px 17px;
+background:linear-gradient(100deg,var(--purple2),var(--purple));
+color:white;font-weight:700;
+}
+.btn.secondary{background:#242033;border:1px solid #403653}
+.btn.green{background:#126e50}
+.btn:active{transform:scale(.98)}
+.output{
+white-space:pre-wrap;overflow-wrap:anywhere;
+background:#090910;border:1px solid #393047;
+padding:16px;border-radius:12px;min-height:110px;color:#e8ddff;
+}
+.hidden{display:none!important}
+.list-item{
+padding:13px;background:#12121d;border:1px solid var(--border);
+border-radius:11px;margin:9px 0;overflow-wrap:anywhere;
+}
+.list-item p{white-space:pre-wrap;color:#ddd6ed;font-size:13px}
+.list-actions{display:flex;gap:7px;flex-wrap:wrap}
+.list-actions button{
+background:#272136;color:white;border:1px solid #423653;
+padding:7px 10px;border-radius:8px;font-size:12px;
+}
+.empty{text-align:center;color:var(--muted);padding:25px}
+footer{text-align:center;padding:35px 10px;color:#777184;font-size:12px}
+.toast{
+position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+background:#252035;border:1px solid #7050a0;padding:11px 18px;
+border-radius:30px;display:none;z-index:120;
+}
+.insta-overlay{
+position:fixed;inset:0;z-index:100;display:flex;
+align-items:center;justify-content:center;padding:20px;
+background:#000c;backdrop-filter:blur(8px);
+}
+.insta-card{
+width:min(390px,100%);padding:28px 22px;text-align:center;
+border:1px solid #7544b5;border-radius:20px;
+background:linear-gradient(145deg,#1b1428,#090910);
+box-shadow:0 0 40px #8b45ff55;
+}
+.insta-icon{
+width:65px;height:65px;margin:0 auto 15px;border-radius:19px;
+display:grid;place-items:center;font-size:32px;
+background:linear-gradient(135deg,#7138db,#e04491);
+}
+.insta-card h2{margin:8px 0;color:white}
+.insta-card p{color:#c3b9d4;font-size:14px}
+.insta-follow{
+display:block;margin-top:18px;padding:13px;border-radius:10px;
+color:white;text-decoration:none;font-weight:800;
+background:linear-gradient(100deg,#7138db,#bd55d9);
+}
+.insta-close{
+margin-top:12px;padding:9px 18px;color:#c9bddb;
+background:transparent;border:1px solid #49385d;border-radius:9px;
+}
+@media(max-width:650px){
+header{padding:12px 4%;align-items:flex-start;flex-direction:column}
+nav{width:100%;overflow-x:auto;flex-wrap:nowrap}
+nav button{white-space:nowrap;font-size:12px}
+.hero{padding-top:35px}
+.grid{grid-template-columns:repeat(2,1fr)}
+.panel{padding:15px}
+.actions .btn{flex:1}
+}
+body.light{
+background:#f1eff7;color:#171322;
+}
+body.light header{background:#ffffffed}
+body.light .panel{background:#fff;color:#171322}
+body.light .category,body.light .list-item{background:#fff;color:#171322}
+body.light textarea,body.light input,body.light select,
+body.light .output{background:#f7f5fc;color:#171322}
+body.light label{color:#393044}
+body.light .list-item p{color:#393044}
+</style>
+</head>
+<body>
+
+<!-- INSTAGRAM WELCOME POPUP -->
+<div class="insta-overlay" id="instaPopup">
+ <div class="insta-card">
+  <div class="insta-icon">📸</div>
+  <h2>Follow My Instagram!</h2>
+  <p>Follow my insta account for more updates</p>
+  <h3 style="color:#c59aff">@its_fearless_boy__</h3>
+  <a class="insta-follow" href="https://www.instagram.com/its_fearless_boy__/" target="_blank" rel="noopener noreferrer">
+  📸 Follow Instagram
+  </a>
+  <button class="insta-close" onclick="closeInstaPopup()">Maybe Later</button>
+ </div>
+</div>
+
+<header>
+ <div class="brand">
+  <div class="brand-mark">PS</div>
+  <div class="brand-name"><b>PS</b><span>PROMPT STUDIO</span></div>
+ </div>
+ <nav>
+  <button class="active" data-page="home">Home</button>
+  <button data-page="generate">Generate</button>
+  <button data-page="categories">Categories</button>
+  <button data-page="saved">My Prompts</button>
+  <button data-page="about">About</button>
+ </nav>
+</header>
+
+<main class="container">
+
+<section id="home" class="page">
+ <div class="hero">
+  <span class="tag">✦ YOUR CREATIVE PROMPT TOOL</span>
+  <h1>Turn Your Imagination<br>Into <span class="gradient">Amazing Prompts</span></h1>
+  <p class="subtitle">Describe your imagination in Hindi or English. Create detailed prompts for images, videos, designs and more.</p>
+ </div>
+ <div class="panel">
+  <h2 class="section-title">✦ What do you want to create?</h2>
+  <textarea id="homeInput" placeholder="Example: Mujhe ek dark aesthetic photo chahiye jisme piche black Bullet bike ho..."></textarea>
+  <div class="actions">
+   <button class="btn" onclick="fromHome()">✦ Generate Prompt</button>
+   <button class="btn secondary" onclick="clearHome()">Clear</button>
+  </div>
+ </div>
+ <h2 class="section-title">Explore Categories</h2>
+ <div class="grid" id="homeCategories"></div>
+ <div class="panel">
+  <h2 class="section-title">How it works</h2>
+  <p>① Describe your idea</p>
+  <p>② Choose a category and style</p>
+  <p>③ Generate and copy your prompt</p>
+ </div>
+</section>
+
+<section id="generate" class="page hidden">
+ <div class="hero">
+  <span class="tag">PROMPT GENERATOR</span>
+  <h1>Create Your <span class="gradient">Prompt</span></h1>
+  <p class="subtitle">Your idea, transformed into a detailed ready-to-use prompt.</p>
+ </div>
+ <div class="panel">
+  <label>Choose Category</label>
+  <select id="categorySelect"></select>
+  <label>Describe what you want (Hindi or English)</label>
+  <textarea id="userIdea" placeholder="Example: Ek black Bullet bike ke saath dark aesthetic photo..."></textarea>
+  <label>Choose Style</label>
+  <select id="styleSelect">
+   <option value="cinematic, professional, highly detailed">Cinematic & Professional</option>
+   <option value="realistic photography, natural details">Realistic</option>
+   <option value="dark aesthetic, moody lighting, deep shadows">Dark Aesthetic</option>
+   <option value="minimal, clean, elegant composition">Minimal</option>
+   <option value="fantasy, dramatic atmosphere, imaginative details">Fantasy</option>
+   <option value="3D render, polished materials, detailed lighting">3D Render</option>
+   <option value="vibrant colors, creative composition">Colorful</option>
+  </select>
+  <label>Aspect Ratio</label>
+  <select id="ratioSelect">
+   <option value="1:1 square composition">Square (1:1)</option>
+   <option value="9:16 vertical composition">Portrait / Reels (9:16)</option>
+   <option value="16:9 widescreen composition">Landscape (16:9)</option>
+   <option value="4:5 portrait composition">Portrait (4:5)</option>
+  </select>
+  <div class="actions">
+   <button class="btn" onclick="generatePrompt()">✦ Generate Prompt</button>
+   <button class="btn secondary" onclick="improvePrompt()">✧ Improve Prompt</button>
+   <button class="btn secondary" onclick="resetGenerator()">Reset</button>
+  </div>
+ </div>
+ <div class="panel">
+  <h2 class="section-title">Your Generated Prompt</h2>
+  <div id="output" class="output">Your prompt will appear here...</div>
+  <div class="actions">
+   <button class="btn" onclick="copyPrompt()">Copy Prompt</button>
+   <button class="btn secondary" onclick="downloadPrompt()">Download .txt</button>
+   <button class="btn secondary" onclick="savePrompt()">♡ Save Favorite</button>
+   <button class="btn secondary" onclick="regenerate()">↻ Regenerate</button>
+  </div>
+  <p style="color:var(--muted);font-size:12px">Note: This version uses built-in templates. AI API mode can be connected later.</p>
+ </div>
+</section>
+
+<section id="categories" class="page hidden">
+ <div class="hero">
+  <span class="tag">EXPLORE</span>
+  <h1>Prompt <span class="gradient">Categories</span></h1>
+  <p class="subtitle">Choose what you want to create.</p>
+ </div>
+ <div class="grid" id="allCategories"></div>
+</section>
+
+<section id="saved" class="page hidden">
+ <div class="hero">
+  <span class="tag">YOUR COLLECTION</span>
+  <h1>My <span class="gradient">Prompts</span></h1>
+  <p class="subtitle">Your saved favorites and recent prompt history.</p>
+ </div>
+ <div class="panel">
+  <h2 class="section-title">♡ Favorites</h2>
+  <div id="favoritesList"></div>
+ </div>
+ <div class="panel">
+  <h2 class="section-title">◷ Recent History</h2>
+  <div id="historyList"></div>
+  <button class="btn secondary" onclick="clearHistory()">Clear History</button>
+ </div>
+</section>
+
+<section id="about" class="page hidden">
+ <div class="hero">
+  <span class="tag">ABOUT US</span>
+  <h1>About <span class="gradient">PS Prompt Studio</span></h1>
+  <p class="subtitle">A simple creative tool to help turn your ideas into detailed AI prompts.</p>
+ </div>
+ <div class="panel">
+  <h2 class="section-title">Our Features</h2>
+  <p>✦ Eight creative prompt categories.</p>
+  <p>✦ Hindi and English input support.</p>
+  <p>✦ Copy and download prompts.</p>
+  <p>✦ Save favorites and recent history.</p>
+  <p>✦ Mobile-friendly dark interface.</p>
+  <p style="color:var(--muted);font-size:13px">PS Prompt Studio is an independent prompt-writing utility. It does not generate images or videos itself.</p>
+ </div>
+ <div class="panel">
+  <h2 class="section-title">Settings</h2>
+  <label>Appearance</label>
+  <button class="btn secondary" onclick="toggleTheme()">Toggle Dark / Light Mode</button>
+  <p style="font-size:12px;color:var(--muted)">Your saved prompts are stored in this browser on this device.</p>
+ </div>
+</section>
+</main>
+
+<footer>
+ <div class="brand" style="justify-content:center">
+  <div class="brand-mark">PS</div>
+  <div class="brand-name"><b>PS</b><span>PROMPT STUDIO</span></div>
+ </div>
+ <br>Create • Imagine • Inspire<br><br>
+ <a href="https://www.instagram.com/its_fearless_boy__/" target="_blank" rel="noopener noreferrer" style="color:#bd91ff;text-decoration:none">@its_fearless_boy__</a>
+ <br><br>© 2026 PS Prompt Studio
+</footer>
+<div id="toast" class="toast"></div>
+
+<script>
+const categories=[
+{name:"Image Prompts",icon:"🖼️",desc:"Photos and artwork",type:"image"},
+{name:"Video Prompts",icon:"🎬",desc:"Videos and reels",type:"video"},
+{name:"Logo & Design",icon:"🎨",desc:"Logos and posters",type:"design"},
+{name:"Coding",icon:"💻",desc:"Websites and apps",type:"coding"},
+{name:"Study",icon:"📚",desc:"Learning and revision",type:"study"},
+{name:"Social Media",icon:"📱",desc:"Posts and captions",type:"social"},
+{name:"Business",icon:"📈",desc:"Business and marketing",type:"business"},
+{name:"All-in-One",icon:"✨",desc:"Any creative idea",type:"general"}
+];
+
+let currentPrompt="";
+let lastIdea="";
+let history=JSON.parse(localStorage.getItem("ps_history")||"[]");
+let favorites=JSON.parse(localStorage.getItem("ps_favorites")||"[]");
+
+function closeInstaPopup(){
+ document.getElementById("instaPopup").style.display="none";
+}
+
+function showToast(message){
+ const t=document.getElementById("toast");
+ t.textContent=message;t.style.display="block";
+ clearTimeout(window.toastTimer);
+ window.toastTimer=setTimeout(()=>t.style.display="none",2200);
+}
+
+function go(page){
+ document.querySelectorAll(".page").forEach(p=>p.classList.add("hidden"));
+ document.getElementById(page).classList.remove("hidden");
+ document.querySelectorAll("nav button").forEach(b=>{
+  b.classList.toggle("active",b.dataset.page===page);
+ });
+ if(page==="saved")renderSaved();
+ window.scrollTo(0,0);
+}
+
+document.querySelectorAll("nav button").forEach(b=>{
+ b.addEventListener("click",()=>go(b.dataset.page));
+});
+
+function makeCategoryCards(target){
+ document.getElementById(target).innerHTML=categories.map(c=>`
+ <button class="category" onclick="chooseCategory('${c.type}')">
+ <span class="emoji">${c.icon}</span><strong>${c.name}</strong>
+ <br><small>${c.desc}</small></button>`).join("");
+}
+makeCategoryCards("homeCategories");
+makeCategoryCards("allCategories");
+
+document.getElementById("categorySelect").innerHTML=
+ categories.map(c=>`<option value="${c.type}">${c.icon} ${c.name}</option>`).join("");
+
+function chooseCategory(type){
+ document.getElementById("categorySelect").value=type;
+ go("generate");
+ document.getElementById("userIdea").focus();
+}
+
+function fromHome(){
+ const idea=document.getElementById("homeInput").value.trim();
+ if(!idea){showToast("Please describe your idea first");return;}
+ document.getElementById("userIdea").value=idea;
+ go("generate");
+ generatePrompt();
+}
+
+function clearHome(){
+ document.getElementById("homeInput").value="";
+ showToast("Cleared");
+}
+
+function cleanIdea(s){
+ return s.trim().replace(/\s+/g," ").replace(/[<>]/g,"");
+}
+
+function generateText(idea,type,style,ratio){
+ const details={
+ image:"Create a high-quality image based on this concept.",
+ video:"Create a cinematic video sequence based on this concept. Include natural movement, camera motion, scene transitions and visual continuity.",
+ design:"Create a professional graphic design based on this concept. Focus on clear visual hierarchy, balanced layout, memorable styling and polished details.",
+ coding:"Act as an expert software developer. Build a clean, responsive and accessible solution for this requirement. Include working functionality, clear structure and comments.",
+ study:"Act as a patient expert tutor. Explain this topic step by step in simple language. Include important concepts, examples and a short recap.",
+ social:"Create engaging social media content based on this idea. Use an attention-grabbing opening, clear language and a suitable call to action.",
+ business:"Act as a practical business strategist. Create a clear, realistic and actionable response to this business requirement.",
+ general:"Create a clear, useful and detailed response based on the following requirement."
+ };
+ let result=details[type]+"\n\nMain concept: "+idea;
+ if(type==="image"||type==="video"||type==="design"){
+  result+="\n\nVisual style: "+style+".";
+  result+="\nComposition: "+ratio+".";
+  result+="\n\nPay attention to lighting, composition, details, color harmony and professional quality.";
+  result+="\nAvoid blurry details, distorted objects, unwanted text and visual clutter.";
+ }else{
+  result+="\n\nApproach: "+style+".";
+  result+="\n\nProvide a structured, accurate, practical and easy-to-understand result.";
+ }
+ result+="\n\nMake the final output polished, relevant to the request and ready to use.";
+ return result;
+}
+
+function generatePrompt(){
+ const idea=cleanIdea(document.getElementById("userIdea").value);
+ if(!idea){showToast("Please enter your idea");return;}
+ lastIdea=idea;
+ const type=document.getElementById("categorySelect").value;
+ const style=document.getElementById("styleSelect").value;
+ const ratio=document.getElementById("ratioSelect").value;
+ currentPrompt=generateText(idea,type,style,ratio);
+ document.getElementById("output").textContent=currentPrompt;
+ history.unshift({text:currentPrompt,date:new Date().toLocaleString()});
+ history=history.slice(0,30);
+ localStorage.setItem("ps_history",JSON.stringify(history));
+ showToast("Prompt generated successfully!");
+}
+
+function improvePrompt(){
+ if(!currentPrompt){generatePrompt();return;}
+ currentPrompt+="\n\nAdditional refinement: Add more specific details, improve clarity, maintain consistency and make the result more professional while preserving the original idea.";
+ document.getElementById("output").textContent=currentPrompt;
+ showToast("Prompt improved!");
+}
+
+function regenerate(){
+ if(!lastIdea){showToast("Generate a prompt first");return;}
+ generatePrompt();
+}
+
+function resetGenerator(){
+ document.getElementById("userIdea").value="";
+ document.getElementById("output").textContent="Your prompt will appear here...";
+ currentPrompt="";lastIdea="";
+ showToast("Generator reset");
+}
+
+async function copyPrompt(){
+ if(!currentPrompt){showToast("Generate a prompt first");return;}
+ try{
+  await navigator.clipboard.writeText(currentPrompt);
+  showToast("Prompt copied!");
+ }catch(e){
+  const temp=document.createElement("textarea");
+  temp.value=currentPrompt;document.body.appendChild(temp);
+  temp.select();document.execCommand("copy");temp.remove();
+  showToast("Prompt copied!");
+ }
+}
+
+function downloadPrompt(){
+ if(!currentPrompt){showToast("Generate a prompt first");return;}
+ const blob=new Blob([currentPrompt],{type:"text/plain"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;a.download="PS-Prompt.txt";
+ document.body.appendChild(a);a.click();a.remove();
+ URL.revokeObjectURL(url);
+ showToast("Prompt downloaded!");
+}
+
+function savePrompt(){
+ if(!currentPrompt){showToast("Generate a prompt first");return;}
+ if(favorites.some(f=>f.text===currentPrompt)){
+  showToast("Already in favorites");return;
+ }
+ favorites.unshift({text:currentPrompt,date:new Date().toLocaleString()});
+ favorites=favorites.slice(0,50);
+ localStorage.setItem("ps_favorites",JSON.stringify(favorites));
+ showToast("Saved to favorites!");
+}
+
+function renderSaved(){
+ const fav=document.getElementById("favoritesList");
+ const hist=document.getElementById("historyList");
+ fav.innerHTML=favorites.length?favorites.map((x,i)=>itemHTML(x,"fav",i)).join(""):'<div class="empty">No favorites saved yet.</div>';
+ hist.innerHTML=history.length?history.map((x,i)=>itemHTML(x,"hist",i)).join(""):'<div class="empty">No prompt history yet.</div>';
+}
+
+function itemHTML(x,type,i){
+ const safe=encodeURIComponent(x.text);
+ return `<div class="list-item">
+ <small style="color:#a99bbd">${escapeHTML(x.date)}</small>
+ <p>${escapeHTML(x.text.slice(0,260))}${x.text.length>260?"...":""}</p>
+ <div class="list-actions">
+ <button onclick="useSaved('${safe}')">Open</button>
+ <button onclick="copySaved('${safe}')">Copy</button>
+ ${type==="fav"?`<button onclick="removeFavorite(${i})">Remove</button>`:""}
+ </div></div>`;
+}
+
+function escapeHTML(s){
+ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+
+function useSaved(s){
+ currentPrompt=decodeURIComponent(s);
+ document.getElementById("output").textContent=currentPrompt;
+ go("generate");
+}
+
+async function copySaved(s){
+ const text=decodeURIComponent(s);
+ try{
+  await navigator.clipboard.writeText(text);
+  showToast("Copied!");
+ }catch(e){
+  const temp=document.createElement("textarea");
+  temp.value=text;document.body.appendChild(temp);
+  temp.select();document.execCommand("copy");temp.remove();
+  showToast("Copied!");
+ }
+}
+
+function removeFavorite(i){
+ favorites.splice(i,1);
+ localStorage.setItem("ps_favorites",JSON.stringify(favorites));
+ renderSaved();showToast("Favorite removed");
+}
+
+function clearHistory(){
+ if(!confirm("Clear all prompt history?"))return;
+ history=[];
+ localStorage.setItem("ps_history","[]");
+ renderSaved();showToast("History cleared");
+}
+
+function toggleTheme(){
+ document.body.classList.toggle("light");
+ const light=document.body.classList.contains("light");
+ localStorage.setItem("ps_theme",light?"light":"dark");
+ showToast(light?"Light mode enabled":"Dark mode enabled");
+}
+
+if(localStorage.getItem("ps_theme")==="light"){
+ document.body.classList.add("light");
+}
+
+renderSaved();
+</script>
+</body>
+</html>
